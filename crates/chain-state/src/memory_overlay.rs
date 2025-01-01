@@ -15,6 +15,8 @@ use reth_trie::{
 };
 use revm::db::BundleState;
 use std::sync::OnceLock;
+use tracing::debug;
+
 
 /// A state provider that stores references to in-memory blocks along with their state as well as a
 /// reference of the historical state provider for fallback lookups.
@@ -139,6 +141,7 @@ macro_rules! impl_state_provider {
                 &self,
                 mut input: TrieInput,
             ) -> ProviderResult<(B256, TrieUpdates)> {
+                debug!(target: "narumi", trie_account_prefix_len=input.prefix_sets.account_prefix_set.len(), trie_storage_prefix_len=input.prefix_sets.storage_prefix_sets.len(), "state root input summary");
                 let MemoryOverlayTrieState { nodes, state } = self.trie_state().clone();
                 input.prepend_cached(nodes, state);
                 self.historical.state_root_from_nodes_with_updates(input)
