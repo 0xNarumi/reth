@@ -141,7 +141,16 @@ macro_rules! impl_state_provider {
                 &self,
                 mut input: TrieInput,
             ) -> ProviderResult<(B256, TrieUpdates)> {
-                debug!(target: "narumi", trie_account_prefix_len=input.prefix_sets.account_prefix_set.len(), trie_storage_prefix_len=input.prefix_sets.storage_prefix_sets.len(), "state root input summary");
+                debug!(
+                    target: "narumi", 
+                    trie_account_prefix_len=input.prefix_sets.account_prefix_set.len(), 
+                    trie_storage_prefix_len=input.prefix_sets.storage_prefix_sets.len(),
+                    node_account_len=input.nodes.account_nodes.len(),
+                    node_storage_len=input.nodes.storage_tries.len(),
+                    state_account_len=input.state.accounts.len(),
+                    state_storage_len=input.state.storages.len(),
+                    "state root input summary"
+                );
                 let MemoryOverlayTrieState { nodes, state } = self.trie_state().clone();
                 input.prepend_cached(nodes, state);
                 self.historical.state_root_from_nodes_with_updates(input)
