@@ -270,6 +270,7 @@ where
             duration = ?stats.duration(),
             branches_added = stats.branches_added(),
             leaves_added = stats.leaves_added(),
+            hashed_entries_walked = hashed_entries_walked,
             "calculated state root"
         );
 
