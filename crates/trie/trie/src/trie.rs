@@ -13,7 +13,7 @@ use alloy_consensus::EMPTY_ROOT_HASH;
 use alloy_primitives::{keccak256, Address, B256};
 use alloy_rlp::{BufMut, Encodable};
 use reth_execution_errors::{StateRootError, StorageRootError};
-use tracing::trace;
+use tracing::{debug,trace};
 
 #[cfg(feature = "metrics")]
 use crate::metrics::{StateRootMetrics, TrieRootMetrics};
@@ -158,6 +158,7 @@ where
         let hashed_account_cursor = self.hashed_cursor_factory.hashed_account_cursor()?;
         let (mut hash_builder, mut account_node_iter) = match self.previous_state {
             Some(state) => {
+                debug!(target: "narumi", "previous state detected");
                 let hash_builder = state.hash_builder.with_updates(retain_updates);
                 let walker = TrieWalker::from_stack(
                     trie_cursor,
@@ -271,6 +272,7 @@ where
             branches_added = stats.branches_added(),
             leaves_added = stats.leaves_added(),
             hashed_entries_walked = hashed_entries_walked,
+            updated_storage_nodes = updated_storage_nodes,
             "calculated state root"
         );
 
