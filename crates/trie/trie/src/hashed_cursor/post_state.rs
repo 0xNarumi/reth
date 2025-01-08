@@ -6,7 +6,6 @@ use crate::{
 use alloy_primitives::{map::B256HashSet, B256, U256};
 use reth_primitives::Account;
 use reth_storage_errors::db::DatabaseError;
-use tracing::debug;
 
 /// The hashed cursor factory for the post state.
 #[derive(Clone, Debug)]
@@ -94,7 +93,6 @@ where
             iter += 1;
             db_entry = self.cursor.next()?;
         }
-        debug!(target: "narumi::cursor", iter=iter, "cursor hit db");
 
         // Compare two entries and return the lowest.
         Ok(Self::compare_entries(post_state_entry, db_entry))
