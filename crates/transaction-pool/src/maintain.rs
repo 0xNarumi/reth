@@ -144,7 +144,6 @@ pub async fn maintain_transaction_pool<N, Client, P, St, Tasks>(
     // Listen for new chain events and derive the update action for the pool
     loop {
         trace!(target: "txpool", state=?maintained_state, "awaiting new block or reorg");
-        debug!(target: "narumi", state=?maintained_state, "awaiting new block or reorg");
         metrics.set_dirty_accounts_len(dirty_addresses.len());
         let pool_info = pool.block_info();
 
