@@ -208,7 +208,7 @@ impl<'a, TX: DbTx> DatabaseStateRoot<'a, TX>
         tx: &'a TX,
         input: TrieInput,
     ) -> Result<(B256, TrieUpdates), StateRootError> {
-        debug!(target: "narumi", "state root calc checkpoint2");
+        debug!(target: "narumi", "state root calc checkpoint2-2");
         let state_sorted = input.state.into_sorted();
         let nodes_sorted = input.nodes.into_sorted();
         debug!(target: "narumi", "state root calc checkpoint3");
