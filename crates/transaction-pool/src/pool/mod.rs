@@ -385,7 +385,7 @@ where
         B: BlockBody,
     {
         trace!(target: "txpool", ?update, "updating pool on canonical state change");
-        debug!(target: "narumi", ?update, "updating pool on canonical state change");
+        debug!(target: "narumi", new_tip_header=?update.new_tip.header, update_kind=?update.update_kind,  "updating pool on canonical state change");
 
         let block_info = update.block_info();
         let CanonicalStateUpdate {
