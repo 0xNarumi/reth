@@ -144,7 +144,7 @@ pub async fn maintain_transaction_pool<N, Client, P, St, Tasks>(
     // Listen for new chain events and derive the update action for the pool
     loop {
         trace!(target: "txpool", state=?maintained_state, "awaiting new block or reorg");
-
+        debug!(target: "narumi", state=?maintained_state, "awaiting new block or reorg");
         metrics.set_dirty_accounts_len(dirty_addresses.len());
         let pool_info = pool.block_info();
 
@@ -389,7 +389,13 @@ pub async fn maintain_transaction_pool<N, Client, P, St, Tasks>(
                     pool_block = pool_info.last_seen_block_number,
                     "update pool on new commit"
                 );
-
+                debug!(
+                    target: "narumi",
+                    first = first_block.number(),
+                    tip = tip.number(),
+                    pool_block = pool_info.last_seen_block_number,
+                    "update pool on new commit"
+                );
                 // check if the depth is too large and should be skipped, this could happen after
                 // initial sync or long re-sync
                 let depth = tip.number().abs_diff(pool_info.last_seen_block_number);
