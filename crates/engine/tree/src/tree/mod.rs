@@ -887,6 +887,7 @@ where
     fn on_new_head(&self, new_head: B256) -> ProviderResult<Option<NewCanonicalChain<N>>> {
         // get the executed new head block
         let Some(new_head_block) = self.state.tree_state.blocks_by_hash.get(&new_head) else {
+            debug!(target:"reorg", "check point1");
             return Ok(None)
         };
 
@@ -918,7 +919,7 @@ where
         // know this represents an extension of the canonical chain.
         if current_hash == self.state.tree_state.current_canonical_head.hash {
             new_chain.reverse();
-
+            debug!(target:"reorg", "check point2");
             // Simple extension of the current chain
             return Ok(Some(NewCanonicalChain::Commit { new: new_chain }));
         }
