@@ -371,6 +371,8 @@ pub async fn maintain_transaction_pool<N, Client, P, St, Tasks>(
             CanonStateNotification::Commit { new } => {
                 let (blocks, state) = new.inner();
                 let tip = blocks.tip();
+                let t =  std::time::Instant::now();
+                debug!(target: "mem",num=?tip.block.header.number(), hash=?tip.block.header.hash() , "mempool start syncing");
                 let chain_spec = client.chain_spec();
 
                 // fees for the next block: `tip+1`
@@ -438,7 +440,8 @@ pub async fn maintain_transaction_pool<N, Client, P, St, Tasks>(
                     update_kind: PoolUpdateKind::Commit,
                 };
                 pool.on_canonical_state_change(update);
-
+                debug!(target: "mem",num=?tip.block.header.number(), elapsed_time=t.elapsed().as_millis() , "mempool sync completed");
+                
                 // keep track of mined blob transactions
                 blob_store_tracker.add_new_chain_blocks(&blocks);
             }
