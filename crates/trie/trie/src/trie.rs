@@ -13,7 +13,7 @@ use alloy_consensus::EMPTY_ROOT_HASH;
 use alloy_primitives::{keccak256, Address, B256};
 use alloy_rlp::{BufMut, Encodable};
 use reth_execution_errors::{StateRootError, StorageRootError};
-use tracing::trace;
+use tracing::{trace, debug};
 
 #[cfg(feature = "metrics")]
 use crate::metrics::{StateRootMetrics, TrieRootMetrics};
@@ -181,13 +181,18 @@ where
         let mut account_rlp = Vec::with_capacity(TRIE_ACCOUNT_RLP_MAX_SIZE);
         let mut hashed_entries_walked = 0;
         let mut updated_storage_nodes = 0;
+        let mut visited_nodes = 0;
         while let Some(node) = account_node_iter.try_next()? {
             match node {
                 TrieElement::Branch(node) => {
+                    debug!(target: "srd", key=?node.key, "branch node visited");
+                    visited_nodes += 1;
                     tracker.inc_branch();
                     hash_builder.add_branch(node.key, node.value, node.children_are_in_trie);
                 }
                 TrieElement::Leaf(hashed_address, account) => {
+                    debug!(target: "srd", key=?hashed_address, "leaf node visited");
+                    visited_nodes += 1;
                     tracker.inc_leaf();
                     hashed_entries_walked += 1;
 
@@ -253,7 +258,7 @@ where
                 }
             }
         }
-
+        debug!(target: "sr", total=visited_nodes, "total visited nodes");
         let root = hash_builder.root();
 
         let removed_keys = account_node_iter.walker.take_removed_keys();
