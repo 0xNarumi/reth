@@ -185,13 +185,13 @@ where
         while let Some(node) = account_node_iter.try_next()? {
             match node {
                 TrieElement::Branch(node) => {
-                    debug!(target: "srd", key=?node.key, "branch node visited");
+                    debug!(target: "sd", key=?node.key, "branch node visited");
                     visited_nodes += 1;
                     tracker.inc_branch();
                     hash_builder.add_branch(node.key, node.value, node.children_are_in_trie);
                 }
                 TrieElement::Leaf(hashed_address, account) => {
-                    debug!(target: "srd", key=?hashed_address, "leaf node visited");
+                    debug!(target: "sd", key=?hashed_address, "leaf node visited");
                     visited_nodes += 1;
                     tracker.inc_leaf();
                     hashed_entries_walked += 1;
