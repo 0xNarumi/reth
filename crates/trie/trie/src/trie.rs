@@ -192,7 +192,7 @@ where
                     hash_builder.add_branch(node.key, node.value, node.children_are_in_trie);
                 }
                 TrieElement::Leaf(hashed_address, account) => {
-                    debug!(target: "sd", key=?hashed_address, "leaf node visited");
+                    debug!(target: "sd", key=?hashed_address, ?account, "leaf node visited");
                     visited_nodes += 1;
                     tracker.inc_leaf();
                     hashed_entries_walked += 1;
