@@ -56,6 +56,7 @@ impl<T, H> StateRoot<T, H> {
 
     /// Set the prefix sets.
     pub fn with_prefix_sets(mut self, prefix_sets: TriePrefixSets) -> Self {
+        debug!(target: "check", ?prefix_sets, "prefix_sets check");
         self.prefix_sets = prefix_sets;
         self
     }
@@ -185,7 +186,7 @@ where
         while let Some(node) = account_node_iter.try_next()? {
             match node {
                 TrieElement::Branch(node) => {
-                    debug!(target: "sd", key=?node.key, "branch node visited");
+                    debug!(target: "sd", key=?node.key, value=?node.value, "branch node visited");
                     visited_nodes += 1;
                     tracker.inc_branch();
                     hash_builder.add_branch(node.key, node.value, node.children_are_in_trie);
