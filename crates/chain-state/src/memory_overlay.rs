@@ -15,7 +15,7 @@ use reth_trie::{
 };
 use revm::db::BundleState;
 use std::sync::OnceLock;
-
+use tracing::debug;
 /// A state provider that stores references to in-memory blocks along with their state as well as a
 /// reference of the historical state provider for fallback lookups.
 #[allow(missing_debug_implementations)]
@@ -54,6 +54,7 @@ impl<'a, N: NodePrimitives> MemoryOverlayStateProviderRef<'a, N> {
         self.trie_state.get_or_init(|| {
             let mut trie_state = MemoryOverlayTrieState::default();
             for block in self.in_memory.iter().rev() {
+                debug!(target: "check", number=?block.block().header().number(), "in memory block numbers");
                 trie_state.state.extend_ref(block.hashed_state.as_ref());
                 trie_state.nodes.extend_ref(block.trie.as_ref());
             }
