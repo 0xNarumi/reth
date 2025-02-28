@@ -30,6 +30,7 @@ use reth_trie_db::{
     DatabaseStorageProof, DatabaseStorageRoot, DatabaseTrieWitness, StateCommitment,
 };
 use std::fmt::Debug;
+use tracing::debug;
 
 /// State provider for a given block number which takes a tx reference.
 ///
@@ -115,7 +116,7 @@ impl<'b, Provider: DBProvider + BlockNumReader + StateCommitmentProvider>
     /// Checks and returns `true` if distance to historical block exceeds the provided limit.
     fn check_distance_against_limit(&self, limit: u64) -> ProviderResult<bool> {
         let tip = self.provider.last_block_number()?;
-
+        debug!(target: "oom", ?tip, ?self.block_number);
         Ok(tip.saturating_sub(self.block_number) > limit)
     }
 
