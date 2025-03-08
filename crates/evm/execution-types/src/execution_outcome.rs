@@ -8,6 +8,7 @@ use revm::{
     db::{states::BundleState, BundleAccount},
     primitives::AccountInfo,
 };
+use tracing::debug;
 
 /// Represents a changed account
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -164,7 +165,9 @@ impl<T> ExecutionOutcome<T> {
     ///
     /// This means that depending on status we can potentially return `U256::ZERO`.
     pub fn storage(&self, address: &Address, storage_key: U256) -> Option<U256> {
-        self.bundle.account(address).and_then(|a| a.storage_slot(storage_key))
+        self.bundle.account(address).and_then(|a| {
+            debug!(target: "debug_provider", account=?a, "from execution outcome");
+            a.storage_slot(storage_key)})
     }
 
     /// Return bytecode if known.
