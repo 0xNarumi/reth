@@ -15,6 +15,7 @@ use reth_trie::{
 };
 use revm::db::BundleState;
 use std::sync::OnceLock;
+use tracing::debug;
 
 /// A state provider that stores references to in-memory blocks along with their state as well as a
 /// reference of the historical state provider for fallback lookups.
@@ -221,10 +222,11 @@ impl<N: NodePrimitives> StateProvider for MemoryOverlayStateProviderRef<'_, N> {
     ) -> ProviderResult<Option<StorageValue>> {
         for block in &self.in_memory {
             if let Some(value) = block.execution_output.storage(&address, storage_key.into()) {
+                debug!(target: "debug_provider", number=block.block().number(), ?value, ?address, ?storage_key, "fetched from in memory");
                 return Ok(Some(value));
             }
         }
-
+        debug!(target: "debug_provider", ?address, ?storage_key, "fetching from historical..");
         self.historical.storage(address, storage_key)
     }
 
