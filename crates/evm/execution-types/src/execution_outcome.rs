@@ -166,7 +166,7 @@ impl<T> ExecutionOutcome<T> {
     /// This means that depending on status we can potentially return `U256::ZERO`.
     pub fn storage(&self, address: &Address, storage_key: U256) -> Option<U256> {
         self.bundle.account(address).and_then(|a| {
-            debug!(target: "debug_provider", ?address, storage=?a.storage, "from execution outcome");
+            debug!(target: "debug_provider", ?address, storage=?a.storage, status=?a.status, "from execution outcome");
             a.storage_slot(storage_key)})
     }
 
