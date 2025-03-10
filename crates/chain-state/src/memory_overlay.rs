@@ -215,18 +215,21 @@ impl<N: NodePrimitives> HashedPostStateProvider for MemoryOverlayStateProviderRe
 }
 
 impl<N: NodePrimitives> StateProvider for MemoryOverlayStateProviderRef<'_, N> {
+    #[track_caller]
     fn storage(
         &self,
         address: Address,
         storage_key: StorageKey,
     ) -> ProviderResult<Option<StorageValue>> {
+        let caller = std::panic::Location::caller();
+        let file = caller.file();
         for block in &self.in_memory {
             if let Some(value) = block.execution_output.storage(&address, storage_key.into()) {
-                debug!(target: "debug_provider", number=block.block().number(), ?value, ?address, ?storage_key, "fetched from in memory");
+                debug!(target: "debug_provider", number=block.block().number(), ?value, ?address, ?storage_key, ?file,"fetched from in memory");
                 return Ok(Some(value));
             }
         }
-        debug!(target: "debug_provider", ?address, ?storage_key, "fetching from historical..");
+        debug!(target: "debug_provider", ?address, ?storage_key, ?file,"fetching from historical..");
         self.historical.storage(address, storage_key)
     }
 
