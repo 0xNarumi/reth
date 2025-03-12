@@ -26,6 +26,8 @@ revm.workspace = true
 revm-database.workspace = true
 revm-inspector.workspace = true
 
+tracing.workspace = true
+
 [dev-dependencies]
 reth-trie.workspace = true
 reth-ethereum-forks.workspace = true

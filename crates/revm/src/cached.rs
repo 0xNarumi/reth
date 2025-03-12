@@ -5,6 +5,7 @@ use alloy_primitives::{
 };
 use core::cell::RefCell;
 use revm::{bytecode::Bytecode, state::AccountInfo, Database, DatabaseRef};
+use tracing::debug;
 
 /// A container type that caches reads from an underlying [`DatabaseRef`].
 ///
@@ -99,12 +100,16 @@ impl<DB: DatabaseRef> Database for CachedReadsDbMut<'_, DB> {
     type Error = <DB as DatabaseRef>::Error;
 
     fn basic(&mut self, address: Address) -> Result<Option<AccountInfo>, Self::Error> {
+        debug!(target: "track", ?address, "CachedReads hit");
         let basic = match self.cached.accounts.entry(address) {
             Entry::Occupied(entry) => entry.get().info.clone(),
             Entry::Vacant(entry) => {
                 entry.insert(CachedAccount::new(self.db.basic_ref(address)?)).info.clone()
             }
         };
+        if basic.is_some() {
+            debug!(target: "track", ?address, nonce=basic.as_ref().unwrap().nonce, "CachedReads result");
+        }
         Ok(basic)
     }
 
