@@ -159,6 +159,7 @@ where
         } else {
             self.oracle_config.max_block_history * 2
         };
+        debug!(target: "narumi", max_block=?self.oracle_config.max_block_history, number=?header.number());
 
         for _ in 0..max_blocks {
             // Check if current hash is in cache
@@ -210,7 +211,7 @@ where
             }
         }
 
-        debug!(target: "narumi", ?price);
+        debug!(target: "narumi", ?price, results_len=results.len());
         inner.last_price = GasPriceOracleResult { block_hash: header.hash(), price };
 
         Ok(price)
@@ -235,6 +236,7 @@ where
 
         let base_fee_per_gas = block.base_fee_per_gas();
         let parent_hash = block.parent_hash();
+        debug!(target: "narumi", ?block_hash, ?base_fee_per_gas, ?limit);
 
         // sort the functions by ascending effective tip first
         let sorted_transactions = block.body().transactions_iter().sorted_by_cached_key(|tx| {
@@ -257,7 +259,7 @@ where
 
             // ignore transactions with a tip under the configured threshold
             if let Some(ignore_under) = self.ignore_price {
-                debug!(target: "narumi", ?ignore_under, ?effective_tip);
+                debug!(target: "narumi", ?block_hash, ?ignore_under, ?effective_tip);
                 if effective_tip < Some(ignore_under) {
                     continue
                 }
