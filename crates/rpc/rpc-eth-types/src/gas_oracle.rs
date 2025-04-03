@@ -206,6 +206,7 @@ where
 
         // constrain to the max price
         if let Some(max_price) = self.oracle_config.max_price {
+            debug!(target: "narumi", ?max_price);
             if price > max_price {
                 price = max_price;
             }
