@@ -21,7 +21,7 @@ use schnellru::{ByLength, LruMap};
 use serde::{Deserialize, Serialize};
 use std::fmt::{self, Debug, Formatter};
 use tokio::sync::Mutex;
-use tracing::warn;
+use tracing::{warn, debug};
 
 /// The default gas limit for `eth_call` and adjacent calls. See
 /// [`RPC_DEFAULT_GAS_CAP`](constants::gas_oracle::RPC_DEFAULT_GAS_CAP).
@@ -138,6 +138,7 @@ where
 
         // if we have stored a last price, then we check whether or not it was for the same head
         if inner.last_price.block_hash == header.hash() {
+            debug!(target: "narumi", hash=%header.hash(), price=%inner.last_price.price, "same head price");
             return Ok(inner.last_price.price)
         }
 
@@ -251,6 +252,7 @@ where
 
             // ignore transactions with a tip under the configured threshold
             if let Some(ignore_under) = self.ignore_price {
+                debug!(target: "narumi", ?ignore_under, ?effective_tip);
                 if effective_tip < Some(ignore_under) {
                     continue
                 }
