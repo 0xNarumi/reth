@@ -239,6 +239,7 @@ where
         // sort the functions by ascending effective tip first
         let sorted_transactions = block.body().transactions_iter().sorted_by_cached_key(|tx| {
             if let Some(base_fee) = base_fee_per_gas {
+                debug!(target: "narumi", ?block_hash, ?base_fee, prioroity_fee_or_price=?(*tx).effective_tip_per_gas(base_fee));
                 (*tx).effective_tip_per_gas(base_fee)
             } else {
                 Some((*tx).priority_fee_or_price())
@@ -256,7 +257,7 @@ where
 
             // ignore transactions with a tip under the configured threshold
             if let Some(ignore_under) = self.ignore_price {
-                // debug!(target: "narumi", ?ignore_under, ?effective_tip);
+                debug!(target: "narumi", ?ignore_under, ?effective_tip);
                 if effective_tip < Some(ignore_under) {
                     continue
                 }
