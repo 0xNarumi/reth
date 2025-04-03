@@ -136,6 +136,8 @@ where
 
         let mut inner = self.inner.lock().await;
 
+        debug!(target: "narumi", ?inner, "price orcale inner");
+
         // if we have stored a last price, then we check whether or not it was for the same head
         if inner.last_price.block_hash == header.hash() {
             debug!(target: "narumi", hash=%header.hash(), price=%inner.last_price.price, "same head price");
@@ -195,6 +197,7 @@ where
             inner.last_price.price
         } else {
             results.sort_unstable();
+            debug!(target: "narumi", ?results, "price results");
             *results.get((results.len() - 1) * self.oracle_config.percentile as usize / 100).expect(
                 "gas price index is a percent of nonzero array length, so a value always exists",
             )
@@ -207,6 +210,7 @@ where
             }
         }
 
+        debug!(target: "narumi", ?price);
         inner.last_price = GasPriceOracleResult { block_hash: header.hash(), price };
 
         Ok(price)
@@ -252,7 +256,7 @@ where
 
             // ignore transactions with a tip under the configured threshold
             if let Some(ignore_under) = self.ignore_price {
-                debug!(target: "narumi", ?ignore_under, ?effective_tip);
+                // debug!(target: "narumi", ?ignore_under, ?effective_tip);
                 if effective_tip < Some(ignore_under) {
                     continue
                 }
