@@ -196,6 +196,8 @@ where
             jwt_secret,
             engine_events: event_sender.clone(),
         };
+
+        debug!(target: "narumi", rpc_config=?add_ons_ctx.config.rpc, "launching node");
         let engine_payload_validator = add_ons.engine_validator(&add_ons_ctx).await?;
 
         let consensus_engine_stream = UnboundedReceiverStream::from(consensus_engine_rx)

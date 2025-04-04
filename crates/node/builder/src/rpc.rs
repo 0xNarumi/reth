@@ -545,7 +545,7 @@ where
             modules: &mut modules,
             auth_module: &mut auth_module,
         };
-
+        debug!(target: "narumi", rpc_config=?config.rpc, "launching adds on");
         on_rpc_started.on_rpc_started(ctx, handles.clone())?;
 
         Ok(RpcHandle {
