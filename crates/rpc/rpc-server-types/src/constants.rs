@@ -76,7 +76,7 @@ pub mod gas_oracle {
 
     /// Maximum transaction priority fee (or gas price before London Fork) to be recommended by the
     /// gas price oracle
-    pub const DEFAULT_MAX_GAS_PRICE: U256 = U256::from_limbs([500_000_000_000u64, 0, 0, 0]);
+    pub const DEFAULT_MAX_GAS_PRICE: U256 = U256::from_limbs([100_000u64, 0, 0, 0]);
 
     /// The default minimum gas price, under which the sample will be ignored
     pub const DEFAULT_IGNORE_GAS_PRICE: U256 = U256::from_limbs([2u64, 0, 0, 0]);
