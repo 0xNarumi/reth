@@ -37,6 +37,7 @@ use reth_tasks::{
 };
 use reth_transaction_pool::TransactionPool;
 use std::{fmt, sync::Arc};
+use tracing::debug;
 
 use crate::{OpEthApiError, SequencerClient};
 
@@ -327,6 +328,9 @@ where
 
     fn build_eth_api(self, ctx: EthApiCtx<'_, N>) -> Self::EthApi {
         let Self { sequencer_client } = self;
+
+        let gas_price_oracle = GasPriceOracle::new(ctx.components.provider().clone(), ctx.config.gas_oracle, ctx.cache.clone());
+        debug!(target: "narumi", "bulding op eth api");
         let eth_api = reth_rpc::EthApiBuilder::new(
             ctx.components.provider().clone(),
             ctx.components.pool().clone(),
@@ -340,6 +344,7 @@ where
         .eth_proof_window(ctx.config.eth_proof_window)
         .fee_history_cache_config(ctx.config.fee_history_cache)
         .proof_permits(ctx.config.proof_permits)
+        .gas_oracle(gas_price_oracle)
         .build_inner();
 
         OpEthApi { inner: Arc::new(OpEthApiInner { eth_api, sequencer_client }) }
