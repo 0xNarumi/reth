@@ -37,7 +37,7 @@ use std::{
     ops::Bound::{Excluded, Unbounded},
     sync::Arc,
 };
-use tracing::trace;
+use tracing::{trace, debug};
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
 // TODO: Inlined diagram due to a bug in aquamarine library, should become an include when it's
@@ -365,15 +365,19 @@ impl<T: TransactionOrdering> TxPool<T> {
                         self.all_transactions.pending_fees.base_fee,
                     ))
                 } else {
-                    Box::new(self.pending_pool.best())
+                    let best = self.pending_pool.best();
+                    debug!(target:"bests", all_size=best.all.len(), independent_len=best.independent.len(), "equal");
+                    Box::new(best)
                 }
             }
             Ordering::Greater => {
                 // base fee increased, we only need to enforce this on the pending pool
-                Box::new(self.pending_pool.best_with_basefee_and_blobfee(
+                let best = self.pending_pool.best_with_basefee_and_blobfee(
                     best_transactions_attributes.basefee,
                     best_transactions_attributes.blob_fee.unwrap_or_default(),
-                ))
+                );
+                debug!(target:"bests", all_size=?best.best.all.len(), independent_len=best.best.independent.len(), "Greater");
+                Box::new(best)
             }
             Ordering::Less => {
                 // base fee decreased, we need to move transactions from the basefee + blob pool to
@@ -381,7 +385,7 @@ impl<T: TransactionOrdering> TxPool<T> {
                 let mut unlocked = self
                     .basefee_pool
                     .satisfy_base_fee_transactions(best_transactions_attributes.basefee);
-
+                debug!(target:"bests", unlocked_len=unlocked.len(), "Less");
                 // also include blob pool transactions that are now unlocked
                 unlocked.extend(self.blob_pool.satisfy_attributes(best_transactions_attributes));
 
