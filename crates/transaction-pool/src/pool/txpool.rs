@@ -366,7 +366,7 @@ impl<T: TransactionOrdering> TxPool<T> {
                     ))
                 } else {
                     let best = self.pending_pool.best();
-                    debug!(target:"bests", all_size=best.all.len(), independent_len=best.independent.len(), "equal");
+                    debug!(target:"bests", all_size=best.all.len(), independent_len=best.independent.len(), invalid_len=best.invalid.len(), "equal");
                     Box::new(best)
                 }
             }
