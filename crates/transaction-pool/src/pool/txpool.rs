@@ -367,12 +367,12 @@ impl<T: TransactionOrdering> TxPool<T> {
                 } else {
                     let best = self.pending_pool.best();
                     let PoolSize {
-                        pending_size,
-                        basefee_size,
-                        queued_size,
+                        pending,
+                        basefee,
+                        queued,
                         ..
                     } = self.size();
-                    debug!(target:"bests", ?pending_size, ?basefee_size, ?queued_size); 
+                    debug!(target:"bests", ?pending, ?basefee, ?queued); 
                     debug!(target:"bests", all_size=best.all.len(), independent_len=best.independent.len(), invalid_len=best.invalid.len(), "equal");
                     Box::new(best)
                 }
