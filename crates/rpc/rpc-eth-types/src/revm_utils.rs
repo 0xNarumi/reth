@@ -18,6 +18,7 @@ use std::{
 };
 
 use super::{EthApiError, EthResult, RpcInvalidTransactionError};
+use tracing::debug;
 
 /// Calculates the caller gas allowance.
 ///
@@ -41,6 +42,7 @@ where
     let value = env.value();
     // Subtract transferred value from the caller balance. Return error if the caller has
     // insufficient funds.
+    debug!(target:"narumi", ?balance, env_value=?env.value(), "caller gas allowance");
     let balance = balance
         .checked_sub(env.value())
         .ok_or_else(|| RpcInvalidTransactionError::InsufficientFunds { cost: value, balance })?;
