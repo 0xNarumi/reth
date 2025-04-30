@@ -37,7 +37,7 @@ use std::{
     ops::Bound::{Excluded, Unbounded},
     sync::Arc,
 };
-use tracing::trace;
+use tracing::{trace, debug};
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
 // TODO: Inlined diagram due to a bug in aquamarine library, should become an include when it's
@@ -1678,10 +1678,12 @@ impl<T: PoolTransaction> AllTransactions<T> {
 
         // Check dynamic fee
         let fee_cap = transaction.max_fee_per_gas();
-
+        debug!(target: "narumi", fee_cap, min_base_fee=self.minimal_protocol_basefee, "fee cap check");
         if fee_cap < self.minimal_protocol_basefee as u128 {
             return Err(InsertErr::FeeCapBelowMinimumProtocolFeeCap { transaction, fee_cap })
         }
+        debug!(target:"narumi", "got here");
+
         if fee_cap >= self.pending_fees.base_fee as u128 {
             state.insert(TxState::ENOUGH_FEE_CAP_BLOCK);
         }
@@ -1695,7 +1697,7 @@ impl<T: PoolTransaction> AllTransactions<T> {
             state,
             cumulative_cost,
         };
-
+        debug!(target:"narumi", "got here");
         // try to insert the transaction
         match self.txs.entry(*transaction.id()) {
             Entry::Vacant(entry) => {

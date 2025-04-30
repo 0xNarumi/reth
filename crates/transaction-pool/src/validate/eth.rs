@@ -338,6 +338,7 @@ where
                 InvalidPoolTransactionError::Underpriced,
             )
         }
+        debug!(target:"narumi", "paased priority validation");
 
         // Checks for chainid
         if let Some(chain_id) = transaction.chain_id() {
