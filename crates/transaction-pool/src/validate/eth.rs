@@ -38,6 +38,7 @@ use std::{
     time::Instant,
 };
 use tokio::sync::Mutex;
+use tracing::debug;
 
 /// Validator for Ethereum transactions.
 /// It is a [`TransactionValidator`] implementation that validates ethereum transaction.
@@ -327,6 +328,7 @@ where
 
         // Drop non-local transactions with a fee lower than the configured fee for acceptance into
         // the pool.
+        debug!(target:"narumi", is_local, is_dynamic_fee=transaction.is_dynamic_fee(), max_priority_fee=?transaction.max_priority_fee_per_gas(), min_priority_fee=?self.minimum_priority_fee, "validate tx");
         if !is_local &&
             transaction.is_dynamic_fee() &&
             transaction.max_priority_fee_per_gas() < self.minimum_priority_fee
