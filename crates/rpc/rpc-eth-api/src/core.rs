@@ -789,7 +789,16 @@ where
     /// Handler for: `eth_sendRawTransaction`
     async fn send_raw_transaction(&self, tx: Bytes) -> RpcResult<B256> {
         trace!(target: "rpc::eth", ?tx, "Serving eth_sendRawTransaction");
-        Ok(EthTransactions::send_raw_transaction(self, tx).await?)
+
+        let result = EthTransactions::send_raw_transaction(self, tx).await;
+        match result {
+            Ok(res) => return Ok(res),
+            Err(err) => {
+                trace!(target: "narumi", ?err);
+                return Err(err.into())
+            }
+        }
+        // Ok(EthTransactions::send_raw_transaction(self, tx).await?)
     }
 
     /// Handler for: `eth_sign`
