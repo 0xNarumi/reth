@@ -256,7 +256,7 @@ pub async fn maintain_transaction_pool<N, Client, P, St, Tasks>(
                 reloaded = Some(res);
             }
             ev = events.next() =>  {
-                debug!(target: "narumi",  ?ev, "new events");
+                debug!(target: "narumi", "new events!!");
                  if ev.is_none() {
                     // the stream ended, we are done
                     break;
