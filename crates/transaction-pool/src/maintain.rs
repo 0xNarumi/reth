@@ -180,7 +180,7 @@ pub async fn maintain_transaction_pool<N, Client, P, St, Tasks>(
     // Listen for new chain events and derive the update action for the pool
     loop {
         trace!(target: "txpool", state=?maintained_state, "awaiting new block or reorg");
-
+        info!(target: "narumi", state=?maintained_state, "awaiting new block or reorg");
         metrics.set_dirty_accounts_len(dirty_addresses.len());
         let pool_info = pool.block_info();
 
@@ -256,6 +256,7 @@ pub async fn maintain_transaction_pool<N, Client, P, St, Tasks>(
                 reloaded = Some(res);
             }
             ev = events.next() =>  {
+                debug!(target: "narumi",  ?ev, "new events");
                  if ev.is_none() {
                     // the stream ended, we are done
                     break;
@@ -279,6 +280,7 @@ pub async fn maintain_transaction_pool<N, Client, P, St, Tasks>(
                     .map(|tx| *tx.hash())
                     .collect();
                 debug!(target: "txpool", count=%stale_txs.len(), "removing stale transactions");
+                debug!(target: "narumi", count=%stale_txs.len(), "removing stale transactions");
                 pool.remove_transactions(stale_txs);
             }
         }
@@ -427,7 +429,7 @@ pub async fn maintain_transaction_pool<N, Client, P, St, Tasks>(
                 let tip = blocks.tip();
                 let chain_spec = client.chain_spec();
                 let tip_number=tip.header().number();
-                info!(target: "narumi", tip_number ,"mempool canonicalization starts!!");
+                // info!(target: "narumi", tip_number ,"mempool canonicalization starts!!");
 
                 // fees for the next block: `tip+1`
                 let pending_block_base_fee = chain_spec
