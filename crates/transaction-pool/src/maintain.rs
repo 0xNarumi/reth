@@ -426,6 +426,7 @@ pub async fn maintain_transaction_pool<N, Client, P, St, Tasks>(
                 let (blocks, state) = new.inner();
                 let tip = blocks.tip();
                 let chain_spec = client.chain_spec();
+                debug!(target: "narumi", tip_number=tip.header().number() ,"mempool canonicalization starts!!");
 
                 // fees for the next block: `tip+1`
                 let pending_block_base_fee = chain_spec
@@ -492,6 +493,7 @@ pub async fn maintain_transaction_pool<N, Client, P, St, Tasks>(
                     update_kind: PoolUpdateKind::Commit,
                 };
                 pool.on_canonical_state_change(update);
+                debug!(target: "narumi", tip_number=tip.header().number() ,"mempool canonicalization finished!!");
 
                 // keep track of mined blob transactions
                 blob_store_tracker.add_new_chain_blocks(&blocks);
