@@ -396,8 +396,11 @@ where
 
         let changed_senders = self.changed_senders(changed_accounts.into_iter());
 
+        let ts = std::time::Instant::now();
+        let mut pool_lock = self.pool.write();
+        debug!(target: "narumi", time_elapsed=?ts.elapsed(), "lock acquisition time");
         // update the pool
-        let outcome = self.pool.write().on_canonical_state_change(
+        let outcome = pool_lock.on_canonical_state_change(
             block_info,
             mined_transactions,
             changed_senders,
