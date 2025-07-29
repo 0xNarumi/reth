@@ -40,7 +40,7 @@ use std::{
     ops::Bound::{Excluded, Unbounded},
     sync::Arc,
 };
-use tracing::trace;
+use tracing::{debug, trace};
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
 // TODO: Inlined diagram due to a bug in aquamarine library, should become an include when it's
@@ -569,11 +569,13 @@ impl<T: TransactionOrdering> TxPool<T> {
 
         // Remove all transaction that were included in the block
         let mut removed_txs_count = 0;
+        let ts = std::time::Instant::now();
         for tx_hash in &mined_transactions {
             if self.prune_transaction_by_hash(tx_hash).is_some() {
                 removed_txs_count += 1;
             }
         }
+        debug!(target: "narumi", removed_txs_count, time_elapsed=?ts.elapsed(), "done pruning transactions");
 
         // Update removed transactions metric
         self.metrics.removed_transactions.increment(removed_txs_count);
