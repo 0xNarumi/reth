@@ -487,7 +487,7 @@ pub async fn maintain_transaction_pool<N, Client, P, St, Tasks>(
                     // long re-sync
                     maintained_state = MaintainedPoolState::Drifted;
                 }
-
+                info!(target: "narumi", tip_number ,"creating state update...");
                 // Canonical update
                 let update = CanonicalStateUpdate {
                     new_tip: tip.sealed_block(),

@@ -387,6 +387,7 @@ where
         B: Block,
     {
         trace!(target: "txpool", ?update, "updating pool on canonical state change");
+        debug!(target: "narumi", "updating pool on canonical state change");
 
         let block_info = update.block_info();
         let CanonicalStateUpdate {
