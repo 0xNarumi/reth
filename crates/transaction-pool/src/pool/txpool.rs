@@ -40,7 +40,7 @@ use std::{
     ops::Bound::{Excluded, Unbounded},
     sync::Arc,
 };
-use tracing::trace;
+use tracing::{trace, warn};
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
 // TODO: Inlined diagram due to a bug in aquamarine library, should become an include when it's
@@ -823,7 +823,9 @@ impl<T: TransactionOrdering> TxPool<T> {
 
         if let Some(authority_list) = &transaction.authority_ids {
             for sender_id in authority_list {
-                if self.all_transactions.txs_iter(*sender_id).next().is_some() {
+                let some = self.all_transactions.txs_iter(*sender_id).next();
+                warn!(target: "narumi", ?some, ?sender_id, "validate auth");
+                if some.is_some() {
                     return Err(PoolError::new(
                         *transaction.hash(),
                         PoolErrorKind::InvalidTransaction(InvalidPoolTransactionError::Eip7702(
