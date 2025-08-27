@@ -40,7 +40,7 @@ use std::{
     ops::Bound::{Excluded, Unbounded},
     sync::Arc,
 };
-use tracing::trace;
+use tracing::{trace, info};
 
 #[cfg_attr(doc, aquamarine::aquamarine)]
 // TODO: Inlined diagram due to a bug in aquamarine library, should become an include when it's
@@ -767,6 +767,7 @@ impl<T: TransactionOrdering> TxPool<T> {
         on_chain_nonce: u64,
         on_chain_code_hash: Option<B256>,
     ) -> Result<(), PoolError> {
+        info!(target:"narumi", ?transaction, ?on_chain_nonce, ?on_chain_code_hash, "delegation check");
         // Short circuit if the sender has neither delegation nor pending delegation.
         if (on_chain_code_hash.is_none() || on_chain_code_hash == Some(KECCAK_EMPTY)) &&
             !self.all_transactions.auths.contains_key(&transaction.sender_id())
@@ -820,10 +821,10 @@ impl<T: TransactionOrdering> TxPool<T> {
         // Allow at most one in-flight tx for delegated accounts or those with a
         // pending authorization.
         self.check_delegation_limit(transaction, on_chain_nonce, on_chain_code_hash)?;
-
         if let Some(authority_list) = &transaction.authority_ids {
             for sender_id in authority_list {
-                if self.all_transactions.txs_iter(*sender_id).nth(1).is_some() {
+                if let Some(tx) = self.all_transactions.txs_iter(*sender_id).nth(1) {
+                    info!(target:"narumi", ?tx, "trasaction detected");
                     return Err(PoolError::new(
                         *transaction.hash(),
                         PoolErrorKind::InvalidTransaction(InvalidPoolTransactionError::Eip7702(
